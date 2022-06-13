@@ -1,6 +1,6 @@
 package com.rk.assignmentaspire.data
 
-data class DataModel(val nextPage: String = "",
+data class DataModel(val nextPage: Int = -1,
                      val statusCode: Int = 0,
                      val data: Data,
                      val success: Boolean = false,

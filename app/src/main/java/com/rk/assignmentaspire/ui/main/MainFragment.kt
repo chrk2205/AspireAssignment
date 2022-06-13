@@ -1,16 +1,17 @@
 package com.rk.assignmentaspire.ui.main
 
-import androidx.lifecycle.ViewModelProvider
+import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rk.assignmentaspire.R
 import com.rk.assignmentaspire.adapters.StudentViewAdapter
-import com.rk.assignmentaspire.data.NamesItem
 
 class MainFragment : Fragment() {
 
@@ -20,6 +21,8 @@ class MainFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
 
+    private lateinit var adapter: StudentViewAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -27,23 +30,32 @@ class MainFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        viewModel.getStudentsOfPage(0)
 
-        viewModel.postStudentsList.observe(viewLifecycleOwner) {
-            setView(it?.data?.names!!)
+        setUpRecyclerView(view.findViewById(R.id.studentView), context)
+    }
+
+
+    private fun setUpRecyclerView(recyclerview: RecyclerView, context: Context?) {
+        adapter = StudentViewAdapter(emptyList())
+        recyclerview.layoutManager = LinearLayoutManager(context)
+        recyclerview.adapter = adapter
+        loadNext()
+        recyclerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    loadNext()
+                }
+            }
+        })
+    }
+
+    private fun loadNext() {
+        viewModel.getNextStudents().observe(viewLifecycleOwner) {
+            adapter.updateData(it?.data?.names!!)
         }
-
-
     }
-
-    private fun setView(listOfStudents: List<NamesItem>) {
-        val recyclerview = view?.findViewById<RecyclerView>(R.id.studentView)
-        recyclerview?.layoutManager = LinearLayoutManager(context)
-        val adapter = StudentViewAdapter(listOfStudents)
-        recyclerview?.adapter = adapter
-    }
-
 }
