@@ -1,6 +1,7 @@
 package com.rk.assignmentaspire.ui.main
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.rk.assignmentaspire.MainActivity
 import com.rk.assignmentaspire.R
 import com.rk.assignmentaspire.adapters.StudentViewAdapter
 
@@ -20,8 +20,8 @@ class MainFragment : Fragment() {
     }
 
     private lateinit var viewModel: MainViewModel
-
     private lateinit var adapter: StudentViewAdapter
+    private lateinit var sharedPref: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +33,7 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        sharedPref = activity?.getPreferences(Context.MODE_PRIVATE)!!
 
         setUpRecyclerView(view.findViewById(R.id.studentView), context)
     }
@@ -40,14 +41,16 @@ class MainFragment : Fragment() {
 
 
     private fun setUpRecyclerView(recyclerview: RecyclerView, context: Context?) {
-        adapter = StudentViewAdapter(emptyList())
-        recyclerview.layoutManager = LinearLayoutManager(context)
+        adapter = StudentViewAdapter(emptyList(),sharedPref)
+        val layoutManager = LinearLayoutManager(context)
+        recyclerview.layoutManager = layoutManager
         recyclerview.adapter = adapter
         loadNext()
 
         adapter.onItemClick = {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.container, StudentDetails.newInstance(it))
+                .addToBackStack("")
                 .commit()
         }
 

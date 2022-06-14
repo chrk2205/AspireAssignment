@@ -1,5 +1,6 @@
 package com.rk.assignmentaspire.adapters
 
+import android.content.SharedPreferences
 import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,11 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.rk.assignmentaspire.R
 import com.rk.assignmentaspire.data.NamesItem
 
-class StudentViewAdapter(studentsList: List<NamesItem>) :
+class StudentViewAdapter(studentsList: List<NamesItem>,
+                         private val sharedPreferences: SharedPreferences
+) :
     RecyclerView.Adapter<StudentViewAdapter.ViewHolder>() {
 
     var onItemClick: ((NamesItem) -> Unit)? = null
@@ -29,6 +33,7 @@ class StudentViewAdapter(studentsList: List<NamesItem>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.id.text = list[position].serialnumber.toString()
         holder.name.text = list[position].name
+        list[position].marks = sharedPreferences.getInt(position.toString(),0)
         holder.mark.text = Editable.Factory.getInstance().newEditable(list[position].marks.toString())
     }
 
@@ -50,8 +55,19 @@ class StudentViewAdapter(studentsList: List<NamesItem>) :
 
         init {
 
+            mark.doAfterTextChanged {
+                try {
+                    list[position].marks = it.toString().toInt()
+                    with(sharedPreferences.edit()){
+                        putInt(position.toString(),list[position].marks)
+                        apply()
+                    }
+                }catch (e : NumberFormatException){
+                    Log.e("rks","exception converting $e")
+                }
+            }
+
             ItemView.setOnClickListener{
-                list[adapterPosition].marks = mark.text.toString().toInt()
                 onItemClick?.invoke(list[adapterPosition])
             }
 

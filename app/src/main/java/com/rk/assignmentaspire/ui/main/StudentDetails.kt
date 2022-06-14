@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.lifecycle.viewModelScope
 import com.rk.assignmentaspire.R
 import com.rk.assignmentaspire.data.NamesItem
 
