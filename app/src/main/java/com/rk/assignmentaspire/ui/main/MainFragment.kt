@@ -2,7 +2,6 @@ package com.rk.assignmentaspire.ui.main
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.rk.assignmentaspire.MainActivity
 import com.rk.assignmentaspire.R
 import com.rk.assignmentaspire.adapters.StudentViewAdapter
 
@@ -38,11 +38,19 @@ class MainFragment : Fragment() {
     }
 
 
+
     private fun setUpRecyclerView(recyclerview: RecyclerView, context: Context?) {
         adapter = StudentViewAdapter(emptyList())
         recyclerview.layoutManager = LinearLayoutManager(context)
         recyclerview.adapter = adapter
         loadNext()
+
+        adapter.onItemClick = {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.container, StudentDetails.newInstance(it))
+                .commit()
+        }
+
         recyclerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -51,6 +59,7 @@ class MainFragment : Fragment() {
                 }
             }
         })
+
     }
 
     private fun loadNext() {

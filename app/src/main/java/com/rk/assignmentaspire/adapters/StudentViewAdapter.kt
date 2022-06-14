@@ -1,5 +1,7 @@
 package com.rk.assignmentaspire.adapters
 
+import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,7 @@ import com.rk.assignmentaspire.data.NamesItem
 class StudentViewAdapter(studentsList: List<NamesItem>) :
     RecyclerView.Adapter<StudentViewAdapter.ViewHolder>() {
 
+    var onItemClick: ((NamesItem) -> Unit)? = null
     private var list: List<NamesItem> = studentsList
     private var updatedTimes: Int = 0
 
@@ -26,6 +29,7 @@ class StudentViewAdapter(studentsList: List<NamesItem>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.id.text = list[position].serialnumber.toString()
         holder.name.text = list[position].name
+        holder.mark.text = Editable.Factory.getInstance().newEditable(list[position].marks.toString())
     }
 
     override fun getItemCount(): Int {
@@ -39,16 +43,18 @@ class StudentViewAdapter(studentsList: List<NamesItem>) :
     }
 
 
-    class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
-        val id: TextView = itemView.findViewById(R.id.id)
-        val name: TextView = itemView.findViewById(R.id.name)
-        val mark: EditText = itemView.findViewById(R.id.marks)
+    inner class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
+        val id: TextView = ItemView.findViewById(R.id.id)
+        val name: TextView = ItemView.findViewById(R.id.name)
+        val mark: EditText = ItemView.findViewById(R.id.marks)
 
         init {
-            mark.setOnClickListener {
-                // Not Working check - 1
-                if (mark.text.equals("NA")) mark.setText("");
+
+            ItemView.setOnClickListener{
+                list[adapterPosition].marks = mark.text.toString().toInt()
+                onItemClick?.invoke(list[adapterPosition])
             }
+
         }
 
     }
