@@ -20,7 +20,6 @@ class StudentViewAdapter(studentsList: List<NamesItem>,
 
     var onItemClick: ((NamesItem) -> Unit)? = null
     private var list: List<NamesItem> = studentsList
-    private var updatedTimes: Int = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
@@ -42,11 +41,14 @@ class StudentViewAdapter(studentsList: List<NamesItem>,
     }
 
     fun updateData(updateList: List<NamesItem>) {
-        list = list + updateList
-        notifyItemRangeInserted(updatedTimes * 100, (updatedTimes + 1) * 100)
-        updatedTimes++
+        list = updateList
+        val k : Int = list.size
+        notifyItemRangeInserted(k-100,100)
     }
 
+    fun getStudentViewList() : List<NamesItem>{
+        return list
+    }
 
     inner class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val id: TextView = ItemView.findViewById(R.id.id)
@@ -54,7 +56,6 @@ class StudentViewAdapter(studentsList: List<NamesItem>,
         val mark: EditText = ItemView.findViewById(R.id.marks)
 
         init {
-
             mark.doAfterTextChanged {
                 try {
                     list[position].marks = it.toString().toInt()
@@ -66,13 +67,10 @@ class StudentViewAdapter(studentsList: List<NamesItem>,
                     Log.e("rks","exception converting $e")
                 }
             }
-
             ItemView.setOnClickListener{
                 onItemClick?.invoke(list[adapterPosition])
             }
-
         }
-
     }
 
 
