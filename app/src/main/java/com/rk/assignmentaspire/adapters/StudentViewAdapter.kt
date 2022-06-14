@@ -32,7 +32,7 @@ class StudentViewAdapter(studentsList: List<NamesItem>,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.id.text = list[position].serialnumber.toString()
         holder.name.text = list[position].name
-        list[position].marks = sharedPreferences.getInt(position.toString(),0)
+//        list[position].marks = sharedPreferences.getInt(position.toString(),0)
         holder.mark.text = Editable.Factory.getInstance().newEditable(list[position].marks.toString())
     }
 
@@ -59,10 +59,10 @@ class StudentViewAdapter(studentsList: List<NamesItem>,
             mark.doAfterTextChanged {
                 try {
                     list[position].marks = it.toString().toInt()
-                    with(sharedPreferences.edit()){
-                        putInt(position.toString(),list[position].marks)
-                        apply()
-                    }
+//                    with(sharedPreferences.edit()){
+//                        putInt(position.toString(),list[position].marks)
+//                        apply()
+//                    }
                 }catch (e : NumberFormatException){
                     Log.e("rks","exception converting $e")
                 }
